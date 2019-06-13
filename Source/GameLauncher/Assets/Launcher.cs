@@ -36,7 +36,10 @@ public class Launcher : MonoBehaviour
 
     void Start()
     {
-        GameMetaInfo metaInfo;
+		if (!Directory.Exists(GetInstallPath()))
+			Directory.CreateDirectory(GetInstallPath());
+
+		GameMetaInfo metaInfo;
         metaInfo.localVersion = "well\\ of// \\/course" + DateTime.Now.ToString();
 
         string json = JsonUtility.ToJson(metaInfo);
@@ -46,7 +49,7 @@ public class Launcher : MonoBehaviour
 
 
         // Load local date 
-        string path = Application.persistentDataPath + "/" + "GameMetaInfo";
+        string path = GetInstallPath() + "/" + "GameMetaInfo";
 
         if (File.Exists(path))
         {
@@ -99,7 +102,7 @@ public class Launcher : MonoBehaviour
         else
         {
             // If there's not an update then run the game
-            string exePath = Application.persistentDataPath + "/" + s_GameFolderName + "/" + s_GameExeName;
+            string exePath = GetInstallPath() + "/" + s_GameFolderName + "/" + s_GameExeName;
             Debug.Log("Launching: " + exePath);
             Process.Start(exePath);
         }
@@ -179,7 +182,7 @@ public class Launcher : MonoBehaviour
             // Or retrieve results as binary data
             byte[] results = www.downloadHandler.data;
 
-            string path = Application.persistentDataPath + "/" + Path.GetFileName(url);
+            string path = GetInstallPath() + "/" + Path.GetFileName(url);
 
             Debug.Log("Writing to: " + path);
 
@@ -190,12 +193,12 @@ public class Launcher : MonoBehaviour
             File.WriteAllBytes(path, results);
 
             // Get path without extension
-            string pathWithoutExt = Application.persistentDataPath + "/" + Path.GetFileNameWithoutExtension(path);
+            string pathWithoutExt = GetInstallPath() + "/" + Path.GetFileNameWithoutExtension(path);
 
             if (Directory.Exists(pathWithoutExt))
                 DeleteDirectory(pathWithoutExt);
 
-            string unzipLocationRoot = Application.persistentDataPath;
+            string unzipLocationRoot = GetInstallPath();
 
             Debug.Log("Unzip location: " + pathWithoutExt);
 
@@ -247,9 +250,14 @@ public class Launcher : MonoBehaviour
         }
     }
 
+	string GetInstallPath()
+	{
+		return Application.dataPath + "/" + "GameInstalls";
+	}
+
     string GetMetaInfoFilePath()
     {
-        return Application.persistentDataPath + "/" + "GameMetaInfo";
+		return GetInstallPath() + "/" + "GameMetaInfo";
     }
 
     public static void DeleteDirectory(string target_dir)
