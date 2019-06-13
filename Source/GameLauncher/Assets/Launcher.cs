@@ -25,17 +25,19 @@ public class Launcher : MonoBehaviour
 
     const string s_RepoPath = "ryan-pf/DemoGameLauncher";
     const string s_FilePath = "Builds/boh-build-win.zip";
+    const string s_GameFolderName = "boh-build-win";
+    const string s_GameExeName = "BagOfHolding.exe";
 
     [Serializable]
     struct GameMetaInfo
     {
-        public string yesman;
+        public string localVersion;
     }
 
     void Start()
     {
         GameMetaInfo metaInfo;
-        metaInfo.yesman = "well\\ of// \\/course" + DateTime.Now.ToString();
+        metaInfo.localVersion = "well\\ of// \\/course" + DateTime.Now.ToString();
 
         string json = JsonUtility.ToJson(metaInfo);
         string metaInfoFilePath = GetMetaInfoFilePath();
@@ -48,10 +50,19 @@ public class Launcher : MonoBehaviour
 
         if (File.Exists(path))
         {
-            Debug.Log("Loading local version info from: " + path);
+            Debug.Log("Loading local version info: " + path);
             string text = File.ReadAllText(path);
-            m_LocalVersion = DateTime.Parse(JsonUtility.FromJson<GameMetaInfo>(text).yesman);
-            UpdateStatsPanel();
+			string dateString = JsonUtility.FromJson<GameMetaInfo>(text).localVersion;
+			if (dateString != null)
+			{
+				m_LocalVersion = DateTime.Parse(dateString);
+				UpdateStatsPanel();
+			}
+			else
+			{
+				Debug.Log("Failed to load, so deleting local version info: " + path);
+				File.Delete(path);
+			}
         }
         else
         {
@@ -88,9 +99,7 @@ public class Launcher : MonoBehaviour
         else
         {
             // If there's not an update then run the game
-            string gameFolder = "demogame-build-win";
-            string exeName = "DemoGame.exe";
-            string exePath = Application.persistentDataPath + "/" + gameFolder + "/" + exeName;
+            string exePath = Application.persistentDataPath + "/" + s_GameFolderName + "/" + s_GameExeName;
             Debug.Log("Launching: " + exePath);
             Process.Start(exePath);
         }
@@ -197,7 +206,7 @@ public class Launcher : MonoBehaviour
             
 
             GameMetaInfo metaInfo;
-            metaInfo.yesman = m_LocalVersion.ToString();
+            metaInfo.localVersion = m_LocalVersion.ToString();
 
             string json = JsonUtility.ToJson(metaInfo);
             string metaInfoFilePath = GetMetaInfoFilePath();
