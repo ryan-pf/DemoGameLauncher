@@ -1,0 +1,9 @@
+/*
+/*/
+
+!.gitignore
+!/Builds/
+!/Source/GameLauncher/Assets/
+!/Source/GameLauncher/Packages/
+!/Source/GameLauncher/ProjectSettings/
+!/LauncherBuilds/

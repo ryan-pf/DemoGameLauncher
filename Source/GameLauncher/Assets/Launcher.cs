@@ -24,7 +24,7 @@ public class Launcher : MonoBehaviour
     DateTime m_LocalVersion;
 
     const string s_RepoPath = "ryan-pf/DemoGameLauncher";
-    const string s_FilePath = "demogame-build-win.zip";
+    const string s_FilePath = "Builds/boh-build-win.zip";
 
     [Serializable]
     struct GameMetaInfo
